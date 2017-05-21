@@ -9,6 +9,7 @@ class Piece:
         self.selected = False
         self.origPos = (x, y)
         self.piece = piece
+        self.origPiece = piece
         self.P,self.L,self.N,self.S,self.G,self.K,self.R,self.B,self.PP, \
         self.PL,self.PN,self.PS,self.PR,self.PB, \
         self.RP,self.RL,self.RN,self.RS,self.RG,self.RK,self.RR,self.RB,self.RPP, \
@@ -36,67 +37,72 @@ class Piece:
                   CELLDIM-2*CELLMARGIN, CELLDIM-2*CELLMARGIN)
     
     def showPromotionImage(self, x, y):
-        pass
+        marg = CELLMARGIN // 2
+        image(self.getPic(),x+marg,y+marg,\
+              OPTIONDIM-2*marg,OPTIONDIM-2*marg)
     
-    def show(self):
+    def getPic(self):
         if self.side == "bot":
             if self.piece == "lance":
-                self.showImage(self.L)
+                return self.L
             elif self.piece == "knight":
-                self.showImage(self.N)
+                return self.N
             elif self.piece == "silver":
-                self.showImage(self.S)
+                return self.S
             elif self.piece == "gold":
-                self.showImage(self.G)
+                return self.G
             elif self.piece == "king":
-                self.showImage(self.K)
+                return self.K
             elif self.piece == "pawn":
-                self.showImage(self.P)
+                return self.P
             elif self.piece == "bishop":
-                self.showImage(self.B)
+                return self.B
             elif self.piece == "rook":
-                self.showImage(self.R)
+                return self.R
             elif self.piece == "tokin":
-                self.showImage(self.PP)
+                return self.PP
             elif self.piece == "horse":
-                self.showImage(self.PB)
+                return self.PB
             elif self.piece == "dragon":
-                self.showImage(self.PR)
+                return self.PR
             elif self.piece == "lancePro":
-                self.showImage(self.PL)
+                return self.PL
             elif self.piece == "knightPro":
-                self.showImage(self.PN)
+                return self.PN
             elif self.piece == "silverPro":
-                self.showImage(self.PS)
+                return self.PS
         else:
             if self.piece == "lance":
-                self.showImage(self.RL)
+                return self.RL
             elif self.piece == "knight":
-                self.showImage(self.RN)
+                return self.RN
             elif self.piece == "silver":
-                self.showImage(self.RS)
+                return self.RS
             elif self.piece == "gold":
-                self.showImage(self.RG)
+                return self.RG
             elif self.piece == "king":
-                self.showImage(self.RK)
+                return self.RK
             elif self.piece == "pawn":
-                self.showImage(self.RP)
+                return self.RP
             elif self.piece == "bishop":
-                self.showImage(self.RB)
+                return self.RB
             elif self.piece == "rook":
-                self.showImage(self.RR)
+                return self.RR
             elif self.piece == "tokin":
-                self.showImage(self.RPP)
+                return self.RPP
             elif self.piece == "horse":
-                self.showImage(self.RPB)
+                return self.RPB
             elif self.piece == "dragon":
-                self.showImage(self.RPR)
+                return self.RPR
             elif self.piece == "lancePro":
-                self.showImage(self.RPL)
+                return self.RPL
             elif self.piece == "knightPro":
-                self.showImage(self.RPN)
+                return self.RPN
             elif self.piece == "silverPro":
-                self.showImage(self.RPS)
+                return self.RPS
+    
+    def show(self):
+        self.showImage(self.getPic())
     
     def promote(self):
         if self.piece == "pawn":
@@ -112,6 +118,8 @@ class Piece:
         elif self.piece == "rook":
             self.piece = "dragon"
     
+    def dePromote(self):
+        self.piece = self.origPiece
     
     
     

@@ -46,12 +46,11 @@ def draw():
         b.SELECTED.show()
     if b.PROMOTING != None:
         b.showPromote()
-    b.showPromote()
 
 def mousePressed():
     if b.SELECTED != None:
         b.checkDeselect(mouseX, mouseY)
     elif b.PROMOTING != None:
-        b.checkPromote(mouseX, mouseY)
+        b.checkPromotionSelection(mouseX, mouseY)
     else:
         b.checkSelect(mouseX, mouseY)

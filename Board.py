@@ -1,6 +1,7 @@
 from BoardCell import *
 from Constants import *
 from Piece import *
+from Hand import *
 
 class Board:
     def __init__(self, imgs):
@@ -11,6 +12,8 @@ class Board:
         self.matrix = [[BoardCell(x, y) for x in range(9)] for y in range(9)]
         self.placePieces()
         self.promotionData = None
+        self.botHand = Hand("bot")
+        self.topHand = Hand("top")
     
     def changePlayer(self):
         if self.playing == "bot":
@@ -69,7 +72,7 @@ class Board:
             for j in range(len(mat)):
                 xSquare = x+i-xDist
                 ySquare = y+j-yDist
-                if xSquare>=0 and xSquare<8 and ySquare>=0 and ySquare<8:
+                if xSquare>=0 and xSquare<9 and ySquare>=0 and ySquare<9:
                     if mat[j][i] == "move":
                         self.setAttackMove(xSquare, ySquare, friendly)
     
@@ -80,13 +83,13 @@ class Board:
             for j in range(len(mat)):
                 xSquare = x+i-xDist
                 ySquare = y+j-yDist
-                if xSquare>=0 and xSquare<8 and ySquare>=0 and ySquare<8:
+                if xSquare>=0 and xSquare<9 and ySquare>=0 and ySquare<9:
                     if mat[j][i] == "move":
                         self.setAttackMove(x+i-xDist, y+j-yDist, friendly)
     
     def unvisitAll(self):
-        for x in range(8):
-            for y in range(8):
+        for x in range(9):
+            for y in range(9):
                 self.matrix[y][x].visited = False
     
     def checkCellSight(self, x, y):
@@ -119,8 +122,8 @@ class Board:
             return True
     
     def lineOfSight(self):
-        for x in range(8):
-            for y in range(8):
+        for x in range(9):
+            for y in range(9):
                 if not self.matrix[y][x].visited:
                     self.checkCellSight(x, y)
         self.unvisitAll()
@@ -183,7 +186,7 @@ class Board:
                 self.SELECTED.moved = True
                 self.matrix[self.SELECTED.origPos[1]][self.SELECTED.origPos[0]].piece = None
                 self.changePlayer()
-        self.checkPromote(self.SELECTED)
+                self.checkPromote(self.SELECTED)
         self.SELECTED = None
         self.unmarkAll()
     
@@ -224,8 +227,8 @@ class Board:
                     self.getPromotionData()
     
     def getPromotionData(self):
-        unPromoted = Piece(self.PROMOTING.side,self.PROMOTING.piece,Xpos1,Ypos,self.imgs)
-        promoted = Piece(self.PROMOTING.side,self.PROMOTING.piece,Xpos1,Ypos,self.imgs)
+        unPromoted = Piece(self.PROMOTING.side,self.PROMOTING.piece,0,0,self.imgs)
+        promoted = Piece(self.PROMOTING.side,self.PROMOTING.piece,0,0,self.imgs)
         promoted.promote()
         self.promotionData = (unPromoted, promoted)
     
@@ -233,13 +236,21 @@ class Board:
         fill(*PROMOTION)
         rect(width//2-BOXWIDTH//2,height//2-BOXHEIGHT//2,BOXWIDTH,BOXHEIGHT)
         fill(*OPTIONCOLOR)
-        Xpos1 = (BOXWIDTH-2*OPTIONDIM)//3+width//2-BOXWIDTH//2
-        Xpos2 = 2*(BOXWIDTH-2*OPTIONDIM)//3+width//2-BOXWIDTH//2+OPTIONDIM
-        Ypos = (BOXHEIGHT-OPTIONDIM)//2+width//2-BOXHEIGHT//2
         rect(Xpos1, Ypos, OPTIONDIM, OPTIONDIM)
         rect(Xpos2, Ypos, OPTIONDIM, OPTIONDIM)
         self.promotionData[0].showPromotionImage(Xpos1, Ypos)
         self.promotionData[1].showPromotionImage(Xpos2, Ypos)
+    
+    def checkPromotionSelection(self, x, y):
+        if x>Xpos1 and x<Xpos2+OPTIONDIM and y>Ypos and y<Ypos+OPTIONDIM:
+            if x<Xpos1+OPTIONDIM:
+                self.PROMOTING = None
+            elif x>Xpos2:
+                self.PROMOTING.promote()
+                self.PROMOTING = None
+    
+    
+    
     
     
     
