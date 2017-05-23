@@ -33,7 +33,7 @@ def setup():
     RPR = loadImage("DragonR.png")
     RPB = loadImage("HorseR.png")
     imgs = (P, L, N, S, G, K, R, B, PP, PL, PN, PS, PR, PB, \
-            RP, RL, RN, RS, RG, RK, RR, RB, RPP, RPL, RPN, RPS, RPR, PB)
+            RP, RL, RN, RS, RG, RK, RR, RB, RPP, RPL, RPN, RPS, RPR, RPB)
     background(100)
     b = Board(imgs)
     b.show()

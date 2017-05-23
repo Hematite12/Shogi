@@ -12,8 +12,8 @@ class Board:
         self.matrix = [[BoardCell(x, y) for x in range(9)] for y in range(9)]
         self.placePieces()
         self.promotionData = None
-        self.botHand = Hand("bot")
-        self.topHand = Hand("top")
+        self.botHand = Hand("bot", self.imgs)
+        self.topHand = Hand("top", self.imgs)
     
     def changePlayer(self):
         if self.playing == "bot":
@@ -51,6 +51,8 @@ class Board:
         for x in range(9):
             for y in range(9):
                 self.matrix[y][x].show()
+        self.topHand.show()
+        self.botHand.show()
     
     def unmarkAll(self):
         for x in range(9):
@@ -164,6 +166,43 @@ class Board:
         if piece.piece != "knight":
             self.lineOfSight()
     
+    def checkColNoPawns(self, x, side):
+        for y in range(9):
+            piece = self.matrix[y][x].piece
+            if piece != None and piece.piece == "pawn" and piece.side == side:
+                return False
+        return True
+    
+    def markDrop(self, piece):
+        for x in range(9):
+            for y in range(9):
+                if self.matrix[y][x].piece == None:
+                    if piece.piece == "pawn":
+                        if piece.side == "bot":
+                            if y > 0:
+                                if self.checkColNoPawns(x, piece.side):
+                                    self.matrix[y][x].movable = True
+                        else:
+                            if y < 8:
+                                if self.checkColNoPawns(x, piece.side):
+                                    self.matrix[y][x].movable = True
+                    elif piece.piece == "lance":
+                        if piece.side == "bot":
+                            if y > 0:
+                                self.matrix[y][x].movable = True
+                        else:
+                            if y < 8:
+                                self.matrix[y][x].movable = True
+                    elif piece.piece == "knight":
+                        if piece.side == "bot":
+                            if y > 1:
+                                self.matrix[y][x].movable = True
+                        else:
+                            if y < 7:
+                                self.matrix[y][x].movable = True
+                    else:
+                        self.matrix[y][x].movable = True
+    
     def checkSelect(self, x, y):
         if x>MARGIN and x<CANVASSIZE-MARGIN and y>MARGIN and y<CANVASSIZE-MARGIN:
             xSquare = (x-MARGIN) // CELLDIM
@@ -174,19 +213,43 @@ class Board:
                 self.SELECTED = piece
                 piece.select()
                 self.markMoves(xSquare, ySquare, piece)
+        else:
+            if self.playing == "bot":
+                piece = self.botHand.checkClick(x, y)
+            elif self.playing == "top":
+                piece = self.topHand.checkClick(x, y)
+            if piece != None:
+                piece.dropping = True
+                self.SELECTED = piece
+                piece.select()
+                self.markDrop(piece)
     
     def checkDeselect(self, x, y):
+        moved = False
         self.SELECTED.deselect()
         if x>MARGIN and x<CANVASSIZE-MARGIN and y>MARGIN and y<CANVASSIZE-MARGIN:
             xSquare = (x-MARGIN) // CELLDIM
             ySquare = (y-MARGIN) // CELLDIM
             cell = self.matrix[ySquare][xSquare]
             if cell.attackable or cell.movable:
-                cell.placePiece(self.SELECTED)
-                self.SELECTED.moved = True
-                self.matrix[self.SELECTED.origPos[1]][self.SELECTED.origPos[0]].piece = None
+                moved = True
+                capPiece = cell.placePiece(self.SELECTED)
+                if capPiece != None:
+                    if self.playing == "bot":
+                        self.botHand.addPiece(capPiece)
+                    elif self.playing == "top":
+                        self.topHand.addPiece(capPiece)
+                if not self.SELECTED.dropping:
+                    self.matrix[self.SELECTED.origPos[1]][self.SELECTED.origPos[0]].piece = None
                 self.changePlayer()
-                self.checkPromote(self.SELECTED)
+                if not self.SELECTED.dropping:
+                    self.checkPromote(self.SELECTED)
+        if self.SELECTED.dropping and not moved:
+            if self.SELECTED.side == "bot":
+                self.botHand.addPiece(self.SELECTED)
+            elif self.SELECTED.side == "top":
+                self.topHand.addPiece(self.SELECTED)
+        self.SELECTED.dropping = False
         self.SELECTED = None
         self.unmarkAll()
     

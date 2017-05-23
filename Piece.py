@@ -2,7 +2,6 @@ from Constants import *
 
 class Piece:
     def __init__(self, side, piece, x, y, imgs):
-        self.moved = False
         self.x = x
         self.y = y
         self.side = side
@@ -10,6 +9,7 @@ class Piece:
         self.origPos = (x, y)
         self.piece = piece
         self.origPiece = piece
+        self.dropping = False
         self.P,self.L,self.N,self.S,self.G,self.K,self.R,self.B,self.PP, \
         self.PL,self.PN,self.PS,self.PR,self.PB, \
         self.RP,self.RL,self.RN,self.RS,self.RG,self.RK,self.RR,self.RB,self.RPP, \
@@ -120,6 +120,10 @@ class Piece:
     
     def dePromote(self):
         self.piece = self.origPiece
+    
+    def showAtPos(self, sc=1):
+        pic = self.getPic()
+        image(pic, self.x, self.y, (CELLDIM-2*CELLMARGIN)*sc, (CELLDIM-2*CELLMARGIN)*sc)
     
     
     

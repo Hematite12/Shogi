@@ -12,9 +12,11 @@ class BoardCell:
         self.selected = False
     
     def placePiece(self, piece):
+        temp = self.piece
         self.piece = piece
         self.piece.x = self.x
         self.piece.y = self.y
+        return temp
     
     def unmark(self):
         self.movable = False
